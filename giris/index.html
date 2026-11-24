@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Boran Eşarp Tekstil - Yönetim</title>
+<link rel="icon" href="../gorseller/logo_isaret.png">
+<link rel="apple-touch-icon" href="../gorseller/logo_png.png">
+<meta name="theme-color" content="#ffffff">
+<style>
+  html, body { margin: 0; height: 100%; background: #ffffff; overflow: hidden; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; border: 0; display: block; }
+</style>
+</head>
+<body>
+<!-- Uygulamanın kendisi ve verisi Google'da (Apps Script + Google Tablo) kalır; bu sayfa giriş ekranıyla birlikte onu tam ekran gösterir. -->
+<iframe id="uygulama" title="Boran Eşarp Tekstil - Yönetim" allow="clipboard-read; clipboard-write; camera; fullscreen; web-share" allowfullscreen></iframe>
+<script>
+  var UYGULAMA = 'https://script.google.com/macros/s/AKfycbwV9mnd_ndaK6w-nOSOwzATnAfg5hcZUhQwJtlf5jp6rMJFj4_J8t2l8YsglgRfw_uM/exec';
+  // Adresteki parametreler (ör. ?kart=...) uygulamaya aynen geçer; alan=1 çıkışta bu sayfaya dönmeyi sağlar
+  var p = new URLSearchParams(location.search);
+  p.set('alan', '1');
+  document.getElementById('uygulama').src = UYGULAMA + '?' + p.toString();
+</script>
+</body>
+</html>
