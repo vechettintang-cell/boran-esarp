@@ -233,7 +233,7 @@
       <a href="#surec">Üretim Süreci</a>
       <a href="#iletisim">İletişim</a>
     </nav>
-    <a class="dugme dugme-koyu" href="#giris">Uygulama Girişi</a>
+    <a class="dugme dugme-koyu" href="giris/">Uygulama Girişi</a>
   </div>
 </header>
 
@@ -254,23 +254,16 @@
         <img class="es es-1" src="gorseller/desen_2.jpg" alt="">
         <img class="es es-2" src="gorseller/desen_3.jpg" alt="">
       </div>
-      <form class="giris-kart" id="giris-formu" novalidate>
+      <div class="giris-kart">
         <img class="giris-logo" src="gorseller/logo_png.png" alt="Boran Eşarp">
         <div class="giris-baslik">
           <span class="ust-yazi">Uygulama Girişi</span>
           <h2>Üretim Takip Sistemi</h2>
           <p>Personel, müşteri ve tasarımcılar e-posta ve şifreleriyle giriş yapar.</p>
         </div>
-        <label>E-posta<input type="email" id="g-eposta" placeholder="ornek@firma.com" autocomplete="username" required></label>
-        <label>Şifre<span class="sifre-kutu"><input type="password" id="g-sifre" placeholder="Şifreniz" autocomplete="current-password" required><button type="button" class="goz" aria-label="Şifreyi göster" onclick="var i=this.previousElementSibling; i.type = i.type === 'password' ? 'text' : 'password';">👁</button></span></label>
-        <div class="giris-satir">
-          <label class="kutucuk"><input type="checkbox" id="g-hatirla"> Beni hatırla</label>
-          <a href="#" data-ekran="sifre">Şifremi unuttum</a>
-        </div>
-        <button class="dugme dugme-koyu giris-dugme" id="g-dugme" type="submit">Giriş Yap →</button>
-        <div class="giris-ileti" id="g-ileti" role="alert" hidden></div>
-        <div class="giris-alt">Hesabınız yok mu? <a href="#" data-ekran="kaydol">Kaydolun</a></div>
-      </form>
+        <a class="dugme dugme-koyu giris-dugme" href="giris/">Giriş Yap →</a>
+        <div class="giris-alt">Hesabınız yok mu? Giriş ekranından <a href="giris/">kaydolun</a></div>
+      </div>
     </div>
   </div>
 </section>
@@ -395,76 +388,13 @@
   <div class="kap">
     <a class="marka" href="#"><img src="gorseller/logo_isaret_acik.png" alt="" style="width:36px;height:36px"><b>BORAN EŞARP</b></a>
     <span>© 2026 Boran Eşarp Tekstil · Kestel / Bursa</span>
-    <a href="#giris" style="color:var(--altin)">Uygulama girişi →</a>
+    <a href="giris/" style="color:var(--altin)">Uygulama girişi →</a>
   </div>
 </footer>
 
-<!-- Uygulama (Apps Script) arka planda yüklenir; giriş başarılı olunca tam ekran açılır. Veri Google Tablo'da kalır. -->
-<iframe id="uygulama-cerceve" class="uyg-cerceve" title="Boran Eşarp Tekstil - Uygulama" allow="clipboard-read; clipboard-write; fullscreen" tabindex="-1"></iframe>
 <script>
-  (function () {
-    var UYGULAMA = 'https://script.google.com/macros/s/AKfycbwV9mnd_ndaK6w-nOSOwzATnAfg5hcZUhQwJtlf5jp6rMJFj4_J8t2l8YsglgRfw_uM/exec';
-    var KAYNAK = /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/; // Apps Script'in kullanıcı çerçevesi
-    var $ = function (id) { return document.getElementById(id); };
-    var cerceve = $('uygulama-cerceve'), form = $('giris-formu'), ileti = $('g-ileti'), dugme = $('g-dugme');
-    var kopru = null, bekleyen = null, bekleme = null;
-    var adres = new URLSearchParams(location.search);
-    var dogrudan = adres.has('kart'); // kumaş etiketi karekoduyla gelindiyse uygulama doğrudan açılır
-    adres.set('alan', '1');
-    cerceve.src = UYGULAMA + '?' + adres.toString();
-
-    function uygulamayiAc() {
-      document.body.classList.add('uygulama-acik');
-      cerceve.removeAttribute('tabindex');
-      document.title = 'Boran Eşarp Tekstil - Yönetim';
-    }
-    function yaz(m, hata) { ileti.textContent = m || ''; ileti.hidden = !m; ileti.classList.toggle('hata', !!hata); }
-    function mesgul(evet) { dugme.disabled = evet; dugme.textContent = evet ? 'Giriş yapılıyor…' : 'Giriş Yap →'; }
-    function bizimMi(kaynak) { // ileti bizim çerçevemizin içinden mi geldi?
-      for (var w = kaynak, i = 0; w && i < 5; i++) { if (w === cerceve.contentWindow) return true; if (w === w.parent) break; w = w.parent; }
-      return false;
-    }
-    function gonder(m) { kopru.pencere.postMessage(m, kopru.koken); }
-    function zamanAsimi(sn, yazi) {
-      clearTimeout(bekleme);
-      bekleme = setTimeout(function () { bekleyen = null; mesgul(false); yaz(yazi, true); setTimeout(uygulamayiAc, 1200); }, sn * 1000);
-    }
-
-    window.addEventListener('message', function (o) {
-      if (!KAYNAK.test(o.origin) || !bizimMi(o.source)) return;
-      kopru = { pencere: o.source, koken: o.origin };
-      var d = o.data || {};
-      if (d.tur === 'boran-hazir') {
-        if (d.oturum || dogrudan) return uygulamayiAc();
-        if (d.eposta && !$('g-eposta').value) { $('g-eposta').value = d.eposta; $('g-hatirla').checked = true; }
-        if (bekleyen) { gonder(bekleyen); bekleyen = null; zamanAsimi(40, 'Yanıt gecikti; uygulamanın kendi giriş ekranı açılıyor.'); }
-      } else if (d.tur === 'boran-giris-sonuc') {
-        clearTimeout(bekleme); mesgul(false);
-        if (d.basarili) { $('g-sifre').value = ''; yaz(''); uygulamayiAc(); }
-        else { yaz(d.mesaj || 'Giriş yapılamadı.', true); $('g-sifre').focus(); }
-      } else if (d.tur === 'boran-cikis') {
-        location.replace(location.pathname); // çıkışta site ana sayfası baştan açılır
-      }
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var eposta = $('g-eposta').value.trim(), sifre = $('g-sifre').value;
-      if (!eposta || !sifre) return yaz('E-posta ve şifrenizi girin.', true);
-      yaz(''); mesgul(true);
-      var m = { tur: 'boran-giris', eposta: eposta, sifre: sifre, hatirla: $('g-hatirla').checked };
-      if (kopru) { gonder(m); zamanAsimi(40, 'Yanıt gecikti; uygulamanın kendi giriş ekranı açılıyor.'); }
-      else { bekleyen = m; yaz('Uygulama yükleniyor…'); zamanAsimi(25, 'Uygulama yüklenemedi; kendi giriş ekranı açılıyor.'); }
-    });
-
-    document.querySelectorAll('[data-ekran]').forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        e.preventDefault();
-        uygulamayiAc();
-        if (kopru) gonder({ tur: 'boran-ekran', ekran: a.getAttribute('data-ekran') });
-      });
-    });
-  })();
+  // Kumaş etiketi karekoduyla (?kart=...) gelindiyse doğrudan uygulamaya geçilir
+  if (new URLSearchParams(location.search).has('kart')) location.replace('giris/' + location.search);
 </script>
 
 <script>
