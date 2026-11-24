@@ -9,13 +9,36 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#1b2a4e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Boran Eşarp">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Google sunucularına bağlantı sayfa açılır açılmaz başlasın -->
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://n-script.googleusercontent.com">
+<link rel="preload" as="image" href="/icon-192.png">
 <style>
-  html, body { margin: 0; height: 100%; background: #ffffff; overflow: hidden; }
-  iframe { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; border: 0; display: block; }
+  html, body { margin: 0; height: 100%; background: #1b2a4e; overflow: hidden; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; border: 0; display: block; background: transparent; }
+  /* Açılış ekranı: uygulama Google'da hazırlanırken görünür */
+  #acilis { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+            background: linear-gradient(160deg, #22355f 0%, #142242 100%); color: #e9d9a6; font: 500 15px -apple-system, system-ui, sans-serif;
+            letter-spacing: .12em; transition: opacity .45s ease; }
+  #acilis img { width: 132px; height: 132px; border-radius: 28px; box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+  #acilis .cubuk { width: 120px; height: 3px; border-radius: 3px; background: rgba(233,217,166,.18); overflow: hidden; }
+  #acilis .cubuk i { display: block; width: 40%; height: 100%; background: #e9d9a6; border-radius: 3px; animation: kay 1.1s ease-in-out infinite; }
+  #acilis.gizle { opacity: 0; pointer-events: none; }
+  @keyframes kay { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
 </style>
 </head>
 <body>
+<div id="acilis" role="status" aria-live="polite">
+  <img src="/icon-192.png" alt="Boran Eşarp">
+  <div class="cubuk"><i></i></div>
+  <div>YÜKLENİYOR</div>
+</div>
 <!-- Uygulamanın kendisi ve verisi Google'da (Apps Script + Google Tablo) kalır; bu sayfa giriş ekranıyla birlikte onu tam ekran gösterir. -->
 <iframe id="uygulama" title="Boran Eşarp Tekstil - Yönetim" allow="clipboard-read; clipboard-write; camera; fullscreen; web-share" allowfullscreen></iframe>
 <script>
@@ -23,7 +46,13 @@
   // Adresteki parametreler (ör. ?kart=...) uygulamaya aynen geçer; alan=1 çıkışta bu sayfaya dönmeyi sağlar
   var p = new URLSearchParams(location.search);
   p.set('alan', '1');
-  document.getElementById('uygulama').src = UYGULAMA + '?' + p.toString();
+  var cerceve = document.getElementById('uygulama'), acilis = document.getElementById('acilis');
+  function ac() { acilis.classList.add('gizle'); setTimeout(function () { acilis.style.display = 'none'; }, 500); }
+  cerceve.addEventListener('load', function () { setTimeout(ac, 150); });
+  setTimeout(ac, 20000); // her ihtimale karşı: 20 sn sonra açılış ekranı kalkar
+  // Uygulama "hazırım" derse (site köprüsü) beklemeden açılır
+  window.addEventListener('message', function (o) { if (/googleusercontent\.com$/.test(o.origin) && o.data && o.data.tur === 'boran-hazir') ac(); });
+  cerceve.src = UYGULAMA + '?' + p.toString();
 </script>
 </body>
 </html>
