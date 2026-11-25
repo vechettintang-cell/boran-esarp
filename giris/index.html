@@ -9,39 +9,39 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#1b2a4e">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Boran Eşarp">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- Google sunucularına bağlantı sayfa açılır açılmaz başlasın -->
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="dns-prefetch" href="https://n-script.googleusercontent.com">
-<link rel="preload" as="image" href="/gorseller/logo_beyaz.png">
+<link rel="preload" as="image" href="/gorseller/logo_siyah.png">
 <style>
-  html, body { margin: 0; height: 100%; background: #1b2a4e; overflow: hidden; }
+  html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
   iframe { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; border: 0; display: block; background: transparent; }
   /* Açılış ekranı: uygulama Google'da hazırlanırken görünür */
   #acilis { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
-            background: radial-gradient(circle at 50% 42%, #2a4072 0%, #1b2a4e 55%, #111c36 100%);
-            color: #fff; font: 500 14px -apple-system, system-ui, sans-serif; transition: opacity .45s ease; }
+            background: #fff;
+            color: #15151a; font: 500 14px -apple-system, system-ui, sans-serif; transition: opacity .45s ease; }
   #acilis.gizle { opacity: 0; pointer-events: none; }
-  /* Beyaz logo + üzerinde ilerleyen ışık (ışık yalnızca logonun çizgisinde görünür) */
+  /* Beyaz zemin, siyah logo + üzerinde ilerleyen ışık (ışık yalnızca logonun çizgisinde görünür) */
   .logo { position: relative; width: 150px; height: 150px; }
-  .logo img { width: 100%; height: 100%; display: block; opacity: .9; filter: drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
+  .logo img { width: 100%; height: 100%; display: block; opacity: .92; }
   .logo .isik { position: absolute; inset: 0;
-    -webkit-mask: url(/gorseller/logo_beyaz.png) center / contain no-repeat; mask: url(/gorseller/logo_beyaz.png) center / contain no-repeat;
-    background: linear-gradient(105deg, transparent 0%, transparent 38%, rgba(233,217,166,.95) 47%, #fff 50%, rgba(233,217,166,.95) 53%, transparent 62%, transparent 100%);
+    -webkit-mask: url(/gorseller/logo_siyah.png) center / contain no-repeat; mask: url(/gorseller/logo_siyah.png) center / contain no-repeat;
+    background: linear-gradient(105deg, transparent 0%, transparent 38%, rgba(184,146,74,.9) 47%, #e9d9a6 50%, rgba(184,146,74,.9) 53%, transparent 62%, transparent 100%);
     background-size: 300% 100%; animation: isik 1.6s ease-in-out infinite; }
   @keyframes isik { 0% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
-  .oran { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 300; letter-spacing: .06em; color: #e9d9a6; min-width: 4ch; text-align: center; }
-  .alt { font-size: 11px; letter-spacing: .32em; color: rgba(255,255,255,.55); margin-top: -14px; }
+  .oran { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 300; letter-spacing: .06em; color: #15151a; min-width: 4ch; text-align: center; }
+  .alt { font-size: 11px; letter-spacing: .32em; color: rgba(21,21,26,.5); margin-top: -14px; }
 </style>
 </head>
 <body>
 <div id="acilis" role="status" aria-live="polite">
-  <div class="logo"><img src="/gorseller/logo_beyaz.png" alt="Boran Eşarp"><div class="isik"></div></div>
+  <div class="logo"><img src="/gorseller/logo_siyah.png" alt="Boran Eşarp"><div class="isik"></div></div>
   <div class="oran" id="oran">%0</div>
   <div class="alt">BORAN EŞARP</div>
 </div>
