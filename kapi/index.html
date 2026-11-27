@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Boran Eşarp Kapı</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<style>
+  :root { --yesil:#15803d; --kirmizi:#b91c1c; --koyu:#111827; --gri:#6b7280; --zemin:#f3f4f6; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; min-height:100%; height:100%; font-family:-apple-system,system-ui,"Segoe UI",Roboto,Arial,sans-serif; background:var(--zemin); color:var(--koyu); }
+  .kutu { min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 18px calc(24px + env(safe-area-inset-bottom)); text-align:center; gap:16px; }
+  h1 { font-size:24px; margin:0; }
+  .buyuk { font-size:30px; font-weight:800; line-height:1.2; overflow-wrap:anywhere; }
+  .not { color:var(--gri); font-size:16px; max-width:30em; line-height:1.45; }
+  .btn { font:inherit; font-size:18px; font-weight:700; border:0; border-radius:12px; padding:16px 22px; width:100%; max-width:340px; background:var(--koyu); color:#fff; cursor:pointer; }
+  .btn.ikincil { background:#e5e7eb; color:var(--koyu); }
+  .btn:disabled { opacity:.5; }
+  .ok { background:var(--yesil); color:#fff; }
+  .hata { background:var(--kirmizi); color:#fff; }
+  .ok .not, .hata .not { color:#f9fafb; }
+  .simge { font-size:72px; line-height:1; }
+  .logo { width:64px; height:64px; }
+</style>
+</head>
+<body>
+<div id="kok" class="kutu"><div class="not">Yükleniyor...</div></div>
+<script>
+(function () {
+  /* Puantaj programının "Herkes" erişimli kapı adresi (şimdilik DENEME tablosu). */
+  var API = 'https://script.google.com/macros/s/AKfycbxqCV-zs0R0v4UXBIFyuOUq6mSsR26kB64T1hYVHsm3ks3HquadivIpQx9NLOjKuF9ueQ/exec';
+  var DEPO = 'boranKapiAnahtar';
+  var kok = document.getElementById('kok');
+  var q = new URLSearchParams(location.search);
+
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function istek(veri) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var sure = setTimeout(function () { if (ctrl) ctrl.abort(); }, 30000);
+    /* text/plain: tarayıcı ön kontrol yapmaz, Google yanıtı doğrudan okunur. */
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(veri), redirect: 'follow', signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (o) { clearTimeout(sure); if (!o.ok) throw new Error(o.hata || 'Hata'); return o.sonuc; },
+        function (e) { clearTimeout(sure); throw new Error(e && e.message === 'Hata' ? e.message : 'Bağlantı kurulamadı. İnternetinizi kontrol edip tekrar okutun.'); });
+  }
+  function anahtarOku() { try { return localStorage.getItem(DEPO) || ''; } catch (e) { return ''; } }
+  function anahtarYaz(a) { try { localStorage.setItem(DEPO, a); return localStorage.getItem(DEPO) === a; } catch (e) { return false; } }
+  function adresTemizle() { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  function goster(html, sinif) { kok.className = 'kutu' + (sinif ? ' ' + sinif : ''); kok.innerHTML = html; }
+  function hataGoster(m) { goster('<div class="simge">✖</div><div class="buyuk">Olmadı</div><div class="not">' + esc(m) + '</div>', 'hata'); }
+
+  function esle(kod) {
+    adresTemizle();
+    istek({ islem: 'esleBilgi', kod: kod }).then(function (o) {
+      goster('<img class="logo" src="/apple-touch-icon.png" alt=""><h1>Telefon eşleme</h1>' +
+        '<div class="buyuk">' + esc(o.ad) + '</div><div class="not">olarak eşleşiyorsunuz. Bu telefon bundan sonra yalnızca sizin giriş-çıkışınız için kullanılacak.</div>' +
+        '<button class="btn" id="evet">Evet, bu benim telefonum</button><button class="btn ikincil" id="hayir">Hayır, ben değilim</button>');
+      document.getElementById('hayir').onclick = function () { goster('<div class="buyuk">Eşleme yapılmadı</div><div class="not">Bu sayfayı kapatabilirsiniz.</div>'); };
+      document.getElementById('evet').onclick = function () {
+        this.disabled = true;
+        istek({ islem: 'esles', kod: kod, cihaz: navigator.userAgent, eski: anahtarOku() }).then(function (r) {
+          if (!anahtarYaz(r.anahtar)) { hataGoster('Telefon eşleme bilgisini kaydedemedi. Gizli (özel) sekmeyi kapatın, Admin\'den yeni QR isteyip normal tarayıcıda tekrar okutun.'); return; }
+          goster('<div class="simge">✔</div><div class="buyuk">' + esc(r.ad) + '</div><div class="not">Telefonunuz eşlendi. Artık işe gelişte ve çıkışta kapıdaki ekranda dönen QR\'ı telefonunuzun kamerasıyla okutun.</div>', 'ok');
+        }).catch(function (e) { hataGoster(e.message); });
+      };
+    }).catch(function (e) { hataGoster(e.message); });
+  }
+
+  function okut(kod) {
+    adresTemizle();
+    var a = anahtarOku();
+    if (!a) { hataGoster('Bu telefon kimseye eşli değil (ya da eşleme bilgisi silinmiş). Admin\'den telefon eşleme QR\'ı isteyin.'); return; }
+    goster('<div class="not">Kaydediliyor...</div>');
+    istek({ islem: 'okut', kod: kod, anahtar: a }).then(function (r) {
+      goster('<div class="simge">' + (r.yon === 'Giriş' ? '➜' : '⬅') + '</div><div class="buyuk">' + esc(r.ad) + '</div>' +
+        '<div class="buyuk">' + esc(String(r.yon).toLocaleUpperCase('tr')) + ' ' + esc(r.saat) + '</div>' +
+        '<div class="not">' + (r.tekrar ? 'Bu okutma az önce kaydedilmişti; tekrar sayılmadı.' : 'Kaydedildi. İyi çalışmalar!') + '</div>', 'ok');
+    }).catch(function (e) { hataGoster(e.message); });
+  }
+
+  function durum() {
+    var a = anahtarOku();
+    if (!a) { goster('<img class="logo" src="/apple-touch-icon.png" alt=""><div class="buyuk">Bu telefon eşli değil</div><div class="not">Admin\'den telefon eşleme QR\'ı isteyin.</div>'); return; }
+    istek({ islem: 'durum', anahtar: a }).then(function (o) {
+      if (o.eslesik) goster('<div class="simge">✔</div><div class="buyuk">' + esc(o.ad) + '</div><div class="not">Bu telefon eşli. Kapıdaki QR\'ı kamerayla okutun.</div>', 'ok');
+      else hataGoster('Bu telefonun eşlemesi iptal edilmiş. Admin\'den yeni eşleme QR\'ı isteyin.');
+    }).catch(function (e) { hataGoster(e.message); });
+  }
+
+  if (q.get('esle')) esle(q.get('esle'));
+  else if (q.get('k')) okut(q.get('k'));
+  else durum();
+})();
+</script>
+</body>
+</html>
